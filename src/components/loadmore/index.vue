@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
 .loadmore {
   overflow-y: auto;
   position: fixed;
@@ -10,39 +10,41 @@
   right: 0;
   z-index: 10;
   user-select: none;
+  .loadmore-content {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    background: #f5f5f5;
+    position: relative;
+  }
   .loading, .pull, .drop {
     position: fixed;
+    width: 100%;
     left: 0;
     right: 0;
     text-align: center;
-    line-height: 30px;
-    font-size: 14px;
+    line-height: 40px;
     z-index: -1;
-  }
-  .loadmore-content {
-    -webkit-backface-visibility: hidden;
-    -webkit-transform-style: preserve-3d;
-    background: #f5f5f5;
+    font-size: 14px;
   }
   .top-loading-text {
-    top: 0;
+    top: -40px;
   }
   .bottom-loading-text {
-    bottom: 0;
+    bottom: 0px;
   }
 }
 </style>
 
 <template>
   <section class="loadmore" ref="loadmore">
-    <section class="loading top-loading-text" v-if="topLoading" v-html="topLoadingText"></section>
-    <section class="pull" :style="{top: `20px`}" v-if="topPull" v-html="topPullText"></section>
-    <section class="drop" :style="{top: `20px`}" v-if="topDrop" v-html="topDropText"></section>
     <section class="loadmore-content" ref="list" :style="style">
+      <section class="loading top-loading-text" v-if="topLoading" v-html="topLoadingText"></section>
+      <section class="pull" :style="{top: `-40px`}" v-if="topPull" v-html="topPullText"></section>
+      <section class="drop" :style="{top: `-40px`}" v-if="topDrop" v-html="topDropText"></section>
       <slot></slot>
     </section>
-    <section v-if="bottomDrop" class="drop" :style="{bottom: `20px`}" v-html="bottomDropText"></section>
-    <section v-if="bottomPull" class="pull" :style="{bottom: `20px`}" v-html="bottomPullText"></section>
+    <section v-if="bottomDrop" class="drop" :style="{bottom: `${0}px`}" v-html="bottomDropText"></section>
+    <section v-if="bottomPull" class="pull" :style="{bottom: `${0}px`}" v-html="bottomPullText"></section>
     <section v-if="bottomLoading" class="loading bottom-loading-text" v-html="bottomLoadingText"></section>
   </section>
 </template>
@@ -106,7 +108,7 @@ export default {
     topDistance: {
       type: Number,
       validater (v) {
-        return v > 30
+        return v > 40
       },
       default () {
         return 60
@@ -116,7 +118,7 @@ export default {
     bottomDistance: {
       type: Number,
       validater (v) {
-        return v > 30
+        return v > 40
       },
       default () {
         return 60
@@ -214,7 +216,7 @@ export default {
       //上拉释放
       if (this.direction == 'up') {
         if (this.bottomDrop) {
-          this.deviationElement(-30, true)
+          this.deviationElement(-40, true)
           setTimeout(() => {
             this.bottomDrop = this.bottomPull = false
             this.bottomLoading = true
@@ -228,7 +230,7 @@ export default {
         }
       } else if (this.direction == 'down') {//下拉释放
         if (this.topDrop) {
-          this.deviationElement(30, true)
+          this.deviationElement(40, true)
           setTimeout(() => {
             this.topDrop = this.topPull = false
             this.topLoading = true
@@ -281,11 +283,13 @@ export default {
       } else {//上拉加载
         this.direction = 'up'
         let h = this.loadmore.clientHeight - this.list.scrollHeight
+          
         if (Math.abs(h) <= sT) {
           prevent = true
           if (this.bottomOn) {
             this.bottomOn = false
             this.dY = this.mY
+            this.$emit('bottomStatusChange', '到底啦')
           }
 
           let bottom = (this.mY - this.dY) / this.distanceIndex,
@@ -304,7 +308,7 @@ export default {
       prevent && ev.preventDefault()
     },
     //scorll 监听事件
-    scrollEv (e) {
+    scrollEv () {
       let sH = this.list.scrollHeight,
           cH = this.loadmore.clientHeight,
           top = this.loadmore.scrollTop
