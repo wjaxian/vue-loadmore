@@ -259,7 +259,8 @@ export default {
       ev = ev || window.event
       this.mY = this.isMobile && ev.touches[0].pageY || ev.pageY
       let sT = this.loadmore.scrollTop,
-          prevent = false
+          prevent = false,
+          h = this.loadmore.clientHeight - this.list.scrollHeight
       //下拉更新
       if ((this.mY - this.dY) > 0) {
         this.direction = 'down'
@@ -282,9 +283,7 @@ export default {
         }
       } else {//上拉加载
         this.direction = 'up'
-        let h = this.loadmore.clientHeight - this.list.scrollHeight
-          
-        if (Math.abs(h) <= sT) {
+        if (Math.abs(Math.abs(h) - sT) < 10) {
           prevent = true
           if (this.bottomOn) {
             this.bottomOn = false
@@ -329,7 +328,7 @@ export default {
       this.list = this.$refs.list
       //自动填充
       if ((this.loadmore.clientHeight > this.list.scrollHeight) && this.autoFill) {
-        this.bottomMethod()
+        this.bottomMethod(!0)
       }
       
       !this.earlyTrigger && this.loadmore.addEventListener(this.touchstart, this.startEv)
@@ -338,6 +337,7 @@ export default {
   },
   deactivated () {
     !this.earlyTrigger && this.loadmore.removeEventListener(this.touchstart, this.startEv)
+    this.earlyTrigger && this.loadmore.removeEventListener('scroll', this.scrollEv)
   }
 }
 </script>

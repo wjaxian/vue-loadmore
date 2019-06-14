@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "json2csv": "^4.5.1",
     "vue": "^2.6.10",
     "vue-router": "^3.0.6"
   },
