@@ -2,6 +2,7 @@ const serve = process.env.NODE_ENV === 'production'
 module.exports = {
 	publicPath: '/',
 	filenameHashing: true,
+	outputPath: 'docs',
 	//index.html 相关配置
 	pages: {
 		index: {
@@ -86,7 +87,7 @@ module.exports = {
 	configureWebpack: {
 		resolve: {
 			alias: {
-				'vue$': 'vue/dist/vue.esm.js' 
+				'vue$': 'vue/docs/vue.esm.js'
 			}
 		}
 	}
